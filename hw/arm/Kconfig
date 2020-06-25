@@ -33,6 +33,11 @@ config ARM_VIRT
     select ACPI_CXL
     select ACPI_HMAT
 
+config ARM_VIRTM
+    bool
+    default y if TCG && ARM
+    select ARM_V7M
+
 config CHEETAH
     bool
     default y if TCG && ARM

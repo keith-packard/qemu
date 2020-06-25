@@ -345,6 +345,9 @@ static void armv7m_realize(DeviceState *dev, Error **errp)
         return;
     }
 
+    if (arm_feature(&s->cpu->env, ARM_FEATURE_V7))
+        qdev_prop_set_bit(dev, "enable-bitband", true);
+
     /* Note that we must realize the NVIC after the CPU */
     if (!sysbus_realize(SYS_BUS_DEVICE(&s->nvic), errp)) {
         return;
