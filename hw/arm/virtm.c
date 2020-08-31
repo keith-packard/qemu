@@ -25,43 +25,25 @@
 #include "exec/address-spaces.h"
 #include "hw/arm/armv7m.h"
 #include "hw/misc/unimp.h"
+#include "sysemu/reset.h"
 #include "cpu.h"
 
 #define NUM_IRQ_LINES 32
-#define ROM_BASE  0x00000000
-#define ROM_SIZE  0x20000000
+#define ROM_BASE    0x00000000
+#define ROM_SIZE    0x20000000
 #define RAM_BASE    0x20000000
 #define RAM_SIZE    0x20000000
 
-static const char *valid_cpus[] = {
-    ARM_CPU_TYPE_NAME("cortex-m0"),
-    ARM_CPU_TYPE_NAME("cortex-m3"),
-    ARM_CPU_TYPE_NAME("cortex-m33"),
-    ARM_CPU_TYPE_NAME("cortex-m4"),
-    ARM_CPU_TYPE_NAME("cortex-m7"),
-};
-
-static bool cpu_type_valid(const char *cpu)
+static void virtm_reset(void *opaque)
 {
-    int i;
+    ARMCPU *cpu = opaque;
 
-    return true;
-    for (i = 0; i < ARRAY_SIZE(valid_cpus); i++) {
-        if (strcmp(cpu, valid_cpus[i]) == 0) {
-            return true;
-        }
-    }
-    return false;
+    cpu_reset(CPU(cpu));
 }
 
 static void machvirtm_init(MachineState *ms)
 {
     DeviceState *nvic;
-
-    if (!cpu_type_valid(ms->cpu_type)) {
-        error_report("virtm: CPU type %s not supported", ms->cpu_type);
-        exit(1);
-    }
 
     MemoryRegion *ram = g_new(MemoryRegion, 1);
     MemoryRegion *rom = g_new(MemoryRegion, 1);
@@ -79,13 +61,15 @@ static void machvirtm_init(MachineState *ms)
     nvic = qdev_new(TYPE_ARMV7M);
     qdev_prop_set_uint32(nvic, "num-irq", NUM_IRQ_LINES);
     qdev_prop_set_string(nvic, "cpu-type", ms->cpu_type);
-    qdev_prop_set_bit(nvic, "enable-bitband", true);
+
     object_property_set_link(OBJECT(nvic), OBJECT(get_system_memory()),
-                                     "memory", &error_abort);
+                             "memory", &error_abort);
     /* This will exit with an error if the user passed us a bad cpu_type */
     sysbus_realize_and_unref(SYS_BUS_DEVICE(nvic), &error_fatal);
 
-    armv7m_load_kernel(ARM_CPU(first_cpu), ms->kernel_filename, ROM_SIZE);
+    ARMCPU *cpu = ARM_CPU(first_cpu);
+
+    qemu_register_reset(virtm_reset, cpu);
 }
 
 static void virtm_class_init(ObjectClass *oc, void *data)
