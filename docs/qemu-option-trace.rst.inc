@@ -1,7 +1,7 @@
 
 Specify tracing options.
 
-.. option:: [enable=]PATTERN
+.. option:: enable=PATTERN
 
   Immediately enable events matching *PATTERN*
   (either event name or a globbing pattern).  This option is only
