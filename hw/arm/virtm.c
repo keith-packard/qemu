@@ -62,12 +62,14 @@ static void machvirtm_init(MachineState *ms)
     qdev_prop_set_uint32(nvic, "num-irq", NUM_IRQ_LINES);
     qdev_prop_set_string(nvic, "cpu-type", ms->cpu_type);
 
-    object_property_set_link(OBJECT(nvic), OBJECT(get_system_memory()),
-                             "memory", &error_abort);
+    object_property_set_link(OBJECT(nvic), "memory", OBJECT(get_system_memory()),
+                             &error_abort);
     /* This will exit with an error if the user passed us a bad cpu_type */
     sysbus_realize_and_unref(SYS_BUS_DEVICE(nvic), &error_fatal);
 
     ARMCPU *cpu = ARM_CPU(first_cpu);
+
+    system_clock_scale = NANOSECONDS_PER_SECOND / 4000000;
 
     qemu_register_reset(virtm_reset, cpu);
 }
