@@ -52,7 +52,7 @@ static inline const char *semihosting_get_cmdline(void)
     return NULL;
 }
 
-static inline Chardev *semihosting_get_chardev(void)
+static inline const char *semihosting_get_chardev(void)
 {
     return NULL;
 }
@@ -66,11 +66,10 @@ const char *semihosting_get_arg(int i);
 int semihosting_get_argc(void);
 const char *semihosting_get_cmdline(void);
 void semihosting_arg_fallback(const char *file, const char *cmd);
-Chardev *semihosting_get_chardev(void);
+const char *semihosting_get_chardev(void);
 /* for vl.c hooks */
 void qemu_semihosting_enable(void);
 int qemu_semihosting_config_options(const char *opt);
-void qemu_semihosting_connect_chardevs(void);
 void qemu_semihosting_console_init(void);
 #endif /* CONFIG_USER_ONLY */
 

@@ -4291,7 +4291,6 @@ void qemu_init(int argc, char **argv, char **envp)
         exit(1);
 
     /* now chardevs have been created we may have semihosting to connect */
-    qemu_semihosting_connect_chardevs();
     qemu_semihosting_console_init();
 
     /* If no default VGA is requested, the default is "none".  */

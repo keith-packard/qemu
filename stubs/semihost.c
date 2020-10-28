@@ -66,10 +66,6 @@ void semihosting_arg_fallback(const char *file, const char *cmd)
 {
 }
 
-void qemu_semihosting_connect_chardevs(void)
-{
-}
-
 void qemu_semihosting_console_init(void)
 {
 }
