@@ -295,6 +295,22 @@ static void m68k_interrupt_all(CPUM68KState *env, int is_hw)
             /* Return from an exception.  */
             m68k_rte(env);
             return;
+        case EXCP_BKPT_INSN:
+            if (semihosting_enabled((env->sr & SR_S) == 0)
+                    && (env->pc & 3) == 0
+                    && cpu_lduw_code(env, env->pc - 4) == 0x4e71
+                    && cpu_ldl_code(env, env->pc) == 0x4e7bf000) {
+                env->pc += 4;
+                do_m68k_semihosting(env, env->dregs[0]);
+                return;
+            }
+            /*
+             * When semihosting is not enabled, translate this back to
+             * an illegal op exception.
+             */
+            cs->exception_index = EXCP_ILLEGAL;
+            env->pc += 2;
+            break;
         }
     }
 

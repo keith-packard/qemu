@@ -2640,6 +2640,10 @@ DISAS_INSN(bkpt)
 #if defined(CONFIG_USER_ONLY)
     gen_exception(s, s->base.pc_next, EXCP_DEBUG);
 #else
+    if ((insn & 7) == 0) {
+        gen_exception(s, s->pc, EXCP_BKPT_INSN);
+        return;
+    }
     gen_exception(s, s->base.pc_next, EXCP_ILLEGAL);
 #endif
 }
