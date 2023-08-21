@@ -288,7 +288,7 @@ static void partsN(uncanon_normal)(FloatPartsN *p, float_status *s,
             p->frac_lo &= ~round_mask;
         }
 
-        exp = (p->frac_hi & DECOMPOSED_IMPLICIT_BIT) != 0;
+        exp = (p->frac_hi & DECOMPOSED_IMPLICIT_BIT) != 0 && !fmt->m68k_denormal;
         frac_shr(p, frac_shift);
 
         if (is_tiny && (flags & float_flag_inexact)) {
