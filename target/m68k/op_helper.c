@@ -295,6 +295,7 @@ static void m68k_interrupt_all(CPUM68KState *env, int is_hw)
             /* Return from an exception.  */
             m68k_rte(env);
             return;
+        case EXCP_HALT_INSN:
         case EXCP_BKPT_INSN:
             if (semihosting_enabled((env->sr & SR_S) == 0)
                     && (env->pc & 3) == 0
